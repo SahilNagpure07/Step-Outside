@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+python-multipart
+python-dotenv
+pymongo[srv]
+sentry-sdk[fastapi]
+google-genai
+httpx
+pillow

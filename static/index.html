@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Step Outside</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main>
+    <h1 id="title"></h1>
+    <p id="text"></p>
+
+    <div id="settings">
+      <label for="minutes">Remind me after</label>
+      <input id="minutes" type="number" min="0.25" max="240" step="0.25" value="20">
+      <span>minutes</span>
+    </div>
+
+    <button id="start-btn">Start</button>
+
+    <label id="photo-btn" class="button hidden">
+      Take one photo
+      <input id="photo-input" type="file" accept="image/*" capture="environment">
+    </label>
+
+    <button id="again-btn" class="hidden">Start again</button>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

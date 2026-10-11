@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: step-outside
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - {key: PYTHON_VERSION, value: 3.12.4}
+      - {key: GEMINI_API_KEY, sync: false}
+      - {key: MONGODB_URI, sync: false}
+      - {key: SENTRY_DSN, sync: false}
+      - {key: SERPAPI_KEY, sync: false}

@@ -1,0 +1,42 @@
+:root { --bg: #f6f4ee; --text: #1f2a21; --green: #3f6b4a; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #141a15; --text: #e8ece6; --green: #8fc59b; }
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 20px/1.5 Georgia, serif;
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+  box-sizing: border-box;
+}
+main { max-width: 30rem; }
+h1 { font-weight: 400; }
+button, .button {
+  background: var(--green);
+  color: var(--bg);
+  border: 0;
+  border-radius: 999px;
+  padding: 0.7rem 1.8rem;
+  font: inherit;
+  cursor: pointer;
+  display: inline-block;
+}
+input[type="file"] { display: none; }
+.hidden { display: none; }
+
+#settings { margin-bottom: 1.5rem; }
+#minutes {
+  width: 4.5rem;
+  font: inherit;
+  text-align: center;
+  padding: 0.3rem;
+  border: 1px solid var(--green);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+}
