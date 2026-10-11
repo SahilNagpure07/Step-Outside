@@ -9,6 +9,8 @@ const againBtn = document.getElementById("again-btn");
 
 let sessionId = null;
 let timer = null;
+let nudgeAt = null;
+let nudged = false;
 
 function setVisible(element, visible) {
   element.classList.toggle("hidden", !visible);
@@ -27,8 +29,10 @@ async function post(url, body) {
 }
 
 function showLanding() {
-  clearTimeout(timer);
+  clearInterval(timer);
   sessionId = null;
+  nudgeAt = null;
+  nudged = false;
   minutesInput.value = localStorage.getItem("minutes") || 20;
   show("🌱 Step Outside", "A small nudge to look up. One photo, then you're done.");
   setVisible(settings, true);
@@ -44,36 +48,59 @@ startBtn.onclick = async () => {
     return;
   }
   localStorage.setItem("minutes", minutes);
-  if ("Notification" in window) await Notification.requestPermission();
+  try {
+    if ("Notification" in window) await Notification.requestPermission();
+  } catch (error) {
+    console.log("Notifications not supported here");
+  }
 
   try {
     const data = await post(`/api/start?minutes=${minutes}`);
     sessionId = data.id;
-    const challengePromise = post(`/api/${sessionId}/challenge`).catch((error) => ({ error }));
     setVisible(settings, false);
     setVisible(startBtn, false);
     show("Okay.", `Keep working. We'll check in after ${minutes} minute(s).`);
 
-    timer = setTimeout(() => nudge(challengePromise), data.idle_seconds * 1000);
+    nudged = false;
+    nudgeAt = Date.now() + data.idle_seconds * 1000;
+    timer = setInterval(checkTime, 1000);
   } catch (error) {
     show("Something went wrong.", error.detail || "");
   }
 };
 
-async function nudge(challengePromise) {
+function checkTime() {
+  if (sessionId && !nudged && nudgeAt && Date.now() >= nudgeAt) {
+    nudge();
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) checkTime();
+});
+
+async function nudge() {
+  if (nudged) return;
+  nudged = true;
+  clearInterval(timer);
   const message = "You've been looking down for a while.";
-  if ("Notification" in window && Notification.permission === "granted") {
-    new Notification("Step Outside", { body: message });
+
+  try {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("Step Outside", { body: message });
+    }
+  } catch (error) {
+    console.log("Notifications not supported here");
   }
-  const result = await challengePromise;
-  if (result.error) {
-    show(message, result.error.detail || "Could not get a challenge. Please start again.");
+
+  try {
+    const data = await post(`/api/${sessionId}/challenge`);
+    show(message, data.challenge);
+    setVisible(photoBtn, true);
+  } catch (error) {
+    show("Couldn't load your challenge.", error.detail || "Please press Start again.");
     setVisible(againBtn, true);
-    return;
   }
-  const data = result;
-  show(message, data.challenge);
-  setVisible(photoBtn, true);
 }
 
 photoInput.onchange = async () => {
